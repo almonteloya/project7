@@ -5,6 +5,8 @@
 import numpy as np
 from typing import List, Tuple
 from numpy.typing import ArrayLike
+import random
+
 
 
 # Defining preprocessing functions
@@ -46,18 +48,16 @@ def one_hot_encode_seqs(seq_arr: List[str]) -> ArrayLike:
     return one_list
 
 
-def sample_seqs(
-        seqs: List[str]
-        labels: List[bool]) -> Tuple[List[seq], List[bool]]:
+def sample_seqs(positive,negative):
     """
     This function should sample your sequences to account for class imbalance. 
     Consider this as a sampling scheme with replacement.
     
     Args:
-        seqs: List[str]
-            List of all sequences.
-        labels: List[bool]
-            List of positive/negative labels
+        positive: List[str]
+            List of all positive sequences.
+        negative: List[str]
+            List of negative sequences
 
     Returns:
         sampled_seqs: List[str]
@@ -65,4 +65,15 @@ def sample_seqs(
         sampled_labels: List[bool]
             List of labels for the sampled sequences
     """
-    pass
+    ## Remove the headers from the negative sequeces
+    negative_filter = [x for x in negative if not x.startswith('>')]
+    ## get a ratio 2:1
+    sub_negative = random.sample(negative_filter, len(positive)*3)
+    ## Then get the first 17 nucleotides for the negative 
+    sub_negative = [i[:17] for i in sub_negative]
+    ## Now we can start put everything togueter
+    sampled_seqs = positive + sub_negative
+    x = np.array([1, 0]) ## Create 
+    sampled_labels = np.repeat(x, [len(positive), len(sub_negative)], axis=0)
+    
+    return sampled_seqs, sampled_labels
