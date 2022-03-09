@@ -29,7 +29,21 @@ def one_hot_encode_seqs(seq_arr: List[str]) -> ArrayLike:
                 G -> [0, 0, 0, 1]
             Then, AGA -> [1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
     """
-    pass
+    sus_mat = {"A": [1, 0, 0, 0], "T": [0, 1, 0, 0],"C": [0, 0, 1, 0],"G":[0, 0, 0, 1]}
+    ## DICTIONARY with sustitution values
+
+    ## Function to split char in a str
+    def _split(word):
+        return [char for char in word]
+
+    one_list=[]
+    for st in seqs:
+        split_str = _split(st)
+        one_code=[]
+        for char in split_str:
+            one_code = one_code + sus_mat[char]
+        one_list.append(one_code)
+    return one_list
 
 
 def sample_seqs(
