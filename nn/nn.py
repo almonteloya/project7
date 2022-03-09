@@ -106,7 +106,6 @@ class NeuralNetwork:
         """
 
         Z_curr = A_prev.dot(W_curr.T) + b_curr.T
-
         ## Look for the correct activation
         assert (activation == "Relu" or activation == "Sigmoid"),"Not correct activation function"
         if activation == "Sigmoid":
@@ -422,7 +421,8 @@ class NeuralNetwork:
                 Partial derivative of current layer Z matrix.
         """
         # if Z < 0 == 0. if Z == 0 == 1.
-        # The derivative f '(0) is not defined. So 0
+        # The derivative f '(0) is not defined. So 1
+        Z = np.where(Z == 0, 1, Z )
         d = np.where(Z > 0, Z, 0)
         dZ = dA * d
 
