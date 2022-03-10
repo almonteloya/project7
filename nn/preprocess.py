@@ -39,7 +39,7 @@ def one_hot_encode_seqs(seq_arr: List[str]) -> ArrayLike:
         return [char for char in word]
 
     one_list=[]
-    for st in seqs:
+    for st in seq_arr:
         split_str = _split(st)
         one_code=[]
         for char in split_str:
