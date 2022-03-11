@@ -4,6 +4,7 @@ import numpy as np
 from nn.nn import NeuralNetwork
 import pytest 
 from nn.preprocess import one_hot_encode_seqs, sample_seqs
+from nn.io import read_text_file,read_fasta_file
 
 
 """
@@ -85,6 +86,7 @@ def test_predict():
     Test 2: For the sigmoid fuction the prediction should be between 1 and 0
 
     """
+    X = np.array([[2],[1]])
 
     y_pred, _ = testpy.predict(X)
     y_predf,_ = testpy.forward(X)
@@ -93,7 +95,7 @@ def test_predict():
 
 
     X= np.array([2,1]).reshape(1,2)
-    y_pred_sigmoid, _testpy_sig.predict(X)
+    y_pred_sigmoid, _ = testpy_sig.predict(X)
 
     assert( np.all((1 > y_pred_sigmoid) & (y_pred_sigmoid > 0)))
 
@@ -106,6 +108,7 @@ def test_single_backprop():
     """
     ## This are our pre-set values
     y_pred, _ = testpy.predict(X)
+
     y = np.array([[0.5], [-0.5]]) 
     Z1= np.array([[ 2. , -0.5],
                   [ 1.5,  0. ]])
@@ -119,7 +122,7 @@ def test_single_backprop():
     # if z > 0 then z
     # Following this logic then:
     derivateZ = np.array([[ 2. , 0],[ 1.5,  1]])
-    manual_da_prev = np(da*derivateZ).dot(simpleW)
+    manual_da_prev = (da*derivateZ).dot(simpleW)
 
 
     dA_prev, dW_curr, db_curr = testpy._single_backprop(
@@ -131,7 +134,7 @@ def test_single_backprop():
     activation_curr= 'Relu')
 
 
-    assert(dA_prev == manual_da_prev)
+    assert(np.all(dA_prev == manual_da_prev))
 
 
 
@@ -169,7 +172,7 @@ def test_binary_cross_entropy_backprop():
     answe_R = np.around(answe_R, decimals=5) 
     bceb = np.around(bceb, decimals=5)
 
-    assert(answe_R == bceb)
+    assert(np.all(answe_R == bceb))
 
 
 
@@ -196,12 +199,11 @@ def test_mean_squared_error_backprop():
     Since we know the y_pred and determined the y values 
     We can simply plug the formula on R
     """
-    y_pred, _ = testpy.predict(X)
-    y = np.array([[0.5],
-       [-0.5]])
+    y_pred = np.array([[0.2], [-0.4]])
+    y = np.array([[0.5], [-0.5]])
     ## This is the R result from te formula
 
-    mse_R = np.array([[-0.3788796],[0.6219598]])
+    mse_R = np.array([[-0.3],[0.1]])
     mse_py = testpy._mean_squared_error_backprop(y,y_pred)
 
     ## Since we have a difference of decimals we'll round them
@@ -216,7 +218,7 @@ def test_one_hot_encode():
     The correct answer was calculated manually based on the example 
     """
     out_hot = one_hot_encode_seqs(["AGA","CT"])
-    assert (out_hot == [[1, 0, 0, 0,0, 0, 0, 1, 1, 0, 0, 0],[0, 1, 0, 0, 0, 0, 1, 0]])
+    assert (out_hot == [[1, 0, 0, 0,0, 0, 0, 1, 1, 0, 0, 0],[0, 0, 1 , 0, 0, 1, 0, 0]])
 
 
 def test_sample_seqs():
@@ -225,10 +227,9 @@ def test_sample_seqs():
     The test is to make sure this ratio is correct 
     """
     rap1_postive = read_text_file("data/rap1-lieb-positives.txt")
-    rap1_negative = read_text_file("data/yeast-upstream-1k-negative.fa")
+    rap1_negative = read_fasta_file("data/yeast-upstream-1k-negative.fa")
 
     sampled_seqs,sampled_labels = sample_seqs(rap1_postive,rap1_negative)
 
     assert(sum(sampled_labels==1)*3 == sum(sampled_labels==0))
-
 
