@@ -6,6 +6,8 @@ import numpy as np
 from typing import List, Tuple
 from numpy.typing import ArrayLike
 import random
+from nn.io import read_text_file
+from nn.io import read_fasta_file
 
 
 
